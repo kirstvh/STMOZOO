@@ -19,9 +19,6 @@ using STMOZOO.BeesAlgorithm
 # ╔═╡ 0ca837e0-42ef-11eb-17fa-9335cb9a3997
 using InteractiveUtils, Plots, PlutoUI
 
-# ╔═╡ 86ed8530-43a5-11eb-2296-1b9ab2c87ea7
-using Pkg; Pkg.add("Optim")
-
 # ╔═╡ 91d40c30-43a5-11eb-1805-ef48b11c3a40
 using Optim
 
@@ -303,11 +300,33 @@ plot(best_fitness_tracker,label="Fitness",	xlabel="iteration",
 md"#### Comparison with optim package
 Below, the performance of the ABC algorithm is compared with the optim package."
 
+# ╔═╡ 36031b80-445e-11eb-0c7c-bd597ac43967
+f_optimize
+
 # ╔═╡ df912bb0-43a5-11eb-3bd2-ebc17c073757
 starting_solution = float(initialize_population(D, bounds_lower, bounds_upper, S/2)[1])
 
+# ╔═╡ 895b6c20-444e-11eb-0db8-3f6ce2a9db0b
+md" ###### Compare with Nelder-Mead algorithm
+Nelder-Mead is the standard algorithm when no gradient information is available. Instead, Nelder-Mead is a direct search method that keeps track of the function value at a number of points (forming a simplex) in the search space. Given a simplex, four actions (reflect, expand, contract, or shrink) are executed to iteratively replace the worst point with a better point. 
+
+Below, the Nelder-Mead algorithm is run for the same amount of iterations as the ABC algorithm. "
+
+
 # ╔═╡ 8f7a52d0-43a7-11eb-3351-eb765609e56e
-@time begin optimize(f_optimize, starting_solution) end
+result = optimize(f_optimize, starting_solution,  method =NelderMead(), iterations = T)
+
+# ╔═╡ 4417cb40-444e-11eb-1f2d-933616b91239
+Optim.minimizer(result)
+
+# ╔═╡ 6dea1f90-444e-11eb-1501-f99dfba633ea
+Optim.minimum(result)
+
+# ╔═╡ 198e69b0-4453-11eb-304f-43a227316038
+md" We see that the Nelder-Mead algorithm of the Optim package happens to get stuck in a local mininimum when trying to minimize the Ackley and Rastrigine function, while the ABC algorithm always succeeds in finding the global minimizer. 
+
+For the other test functions, both the Nelder-Mead algorithm and the ABC algorithm succeed in finding the global minimum (or one of the global minima for the Branin test function). 
+ "
 
 # ╔═╡ 0c78a8b0-4379-11eb-20dc-3dd46dc183d3
 md" ## References
@@ -325,11 +344,11 @@ Karaboga, D., & Basturk, B. (2007). A powerful and efficient algorithm for numer
 # ╠═0ca837e0-42ef-11eb-17fa-9335cb9a3997
 # ╟─a9462a5e-4373-11eb-3b48-39a2596229a9
 # ╟─27f302ee-42ea-11eb-2d9e-49dffc0d983d
-# ╠═3235a8d2-42ea-11eb-1fe1-6d91eca83dad
+# ╟─3235a8d2-42ea-11eb-1fe1-6d91eca83dad
 # ╟─085c34e0-4374-11eb-1ba7-7fb1af1d38a4
-# ╠═0388b3ce-4374-11eb-03f4-9b4c74bd5ff0
+# ╟─0388b3ce-4374-11eb-03f4-9b4c74bd5ff0
 # ╟─6bd962e0-439c-11eb-0ce9-c348bd45b225
-# ╠═350644d0-4375-11eb-2b68-8fb8f4bd7c2a
+# ╟─350644d0-4375-11eb-2b68-8fb8f4bd7c2a
 # ╟─c7c64720-437f-11eb-15a2-477ab2fe0792
 # ╟─caa5b6d0-4373-11eb-0cdd-1961e6698727
 # ╠═f347e610-42a3-11eb-2116-ef50f1246cf3
@@ -338,14 +357,18 @@ Karaboga, D., & Basturk, B. (2007). A powerful and efficient algorithm for numer
 # ╟─b81d7f30-42a5-11eb-27ce-f1cc849ffdc5
 # ╟─9e2b4e60-42ee-11eb-0d7f-c1faa8426796
 # ╟─581a22f0-42af-11eb-1d59-df5f1efa5732
-# ╠═71321ef0-42eb-11eb-0635-b1ce95226c75
+# ╟─71321ef0-42eb-11eb-0635-b1ce95226c75
 # ╟─65bf09be-4377-11eb-2415-3b8be310a065
 # ╟─4219c780-4381-11eb-2289-316eb02b282f
 # ╠═076d2e10-4381-11eb-3e12-6f9d9abe7f9a
 # ╟─749ca5a0-43a5-11eb-3ad6-453463f18aed
 # ╟─4ef00630-43a5-11eb-2095-b3cde3592af9
-# ╠═86ed8530-43a5-11eb-2296-1b9ab2c87ea7
 # ╠═91d40c30-43a5-11eb-1805-ef48b11c3a40
+# ╠═36031b80-445e-11eb-0c7c-bd597ac43967
 # ╠═df912bb0-43a5-11eb-3bd2-ebc17c073757
+# ╟─895b6c20-444e-11eb-0db8-3f6ce2a9db0b
 # ╠═8f7a52d0-43a7-11eb-3351-eb765609e56e
+# ╠═4417cb40-444e-11eb-1f2d-933616b91239
+# ╠═6dea1f90-444e-11eb-1501-f99dfba633ea
+# ╟─198e69b0-4453-11eb-304f-43a227316038
 # ╟─0c78a8b0-4379-11eb-20dc-3dd46dc183d3
