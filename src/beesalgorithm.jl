@@ -131,8 +131,10 @@ julia> compute_fitness(objective_values)
 function compute_fitness(objective_values)
 
     fitness_values = zeros(length(objective_values),1)
-    fitness_values[objective_values .>= 0] = 1 ./ (1 .+ objective_value)
-    fitness_values[objective_values .< 0] = 1 .+ abs(objective_value)
+    #fitness_values[objective_values .>= 0] = 1 ./ (1 .+ objective_value)  # ERRORS: wrong variable name and different length between assigned array and variable
+    fitness_values[objective_values .>= 0] = 1 ./ (1 .+ objective_values[objective_values .>= 0])
+    #fitness_values[objective_values .< 0] = 1 .+ abs(objective_value) # ERRORS: wrong variable name and different length between assigned array and variable
+    fitness_values[objective_values .< 0] = 1 .+ abs.(objective_values[objective_values .< 0]) 
     return fitness_values
 
 end	
@@ -162,8 +164,8 @@ julia> foodsource_info_prob(fitness_values)
 ```
 """
 function foodsource_info_prob(fitness_values)
-
-    probabilities = 0.9 .* (fitness_value ./ maximum(fitness_values)) .+ 0.1
+    probabilities = 0.9 .* (fitness_values ./ maximum(fitness_values)) .+ 0.1 
+    #probabilities = 0.9 .* (fitness_value ./ maximum(fitness_values)) .+ 0.1 #ERROR: wrong variable name
     return probabilities
 end	
 
@@ -252,9 +254,9 @@ Input
 - 'f': the function that you want to use for computing objective values
 
 Output
-- 'population new evolved': newly generated population of solutions
-- 'fitness new evolved': fitness values of the new population
-- 'objective new evolved': objective values of the new population
+- 'population_new_evolved': newly generated population of solutions
+- 'fitness_new_evolved': fitness values of the new population
+- 'objective_new_evolved': objective values of the new population
 - 'trial': updated trials of new solutions in the new population
     When original solution has failed to generate better solution, trial counter is increased by 1 unit
     When better solution has been found, the trial counter for this new solution is set to zero
@@ -348,9 +350,9 @@ Input
 - 'f': the function that you want to use for computing objective values
 
 Output
-- 'population new evolved': newly generated population of solutions
-- 'fitness new evolved': fitness values of the new population
-- 'objective new evolved': objective values of the new population
+- 'population_new_evolved': newly generated population of solutions
+- 'fitness_new_evolved': fitness values of the new population
+- 'objective_new_evolved': objective values of the new population
 - 'trial': updated trials of new solutions in the new population
     When original solution has failed to generate better solution, trial counter is increased by 1 unit
     When better solution has been found, the trial counter for this new solution is set to zero
@@ -447,9 +449,9 @@ Input
 - 'f': the function that you want to use for computing objective values
 
 Output
-- 'population new evolved': newly generated population of solutions
-- 'fitness new evolved': fitness values of the new population
-- 'objective new evolved': objective values of the new population
+- 'population_new_evolved': newly generated population of solutions
+- 'fitness_new_evolved': fitness values of the new population
+- 'objective_new_evolved': objective values of the new population
 - 'trial': updated trials of new solutions in the new population
     When original solution has failed to generate better solution, trial counter is increased by 1 unit
     When better solution has been found, the trial counter for this new solution is set to zero
@@ -502,9 +504,9 @@ function scouting_phase(population, bounds_lower::Vector, bounds_upper::Vector,
             idx = rand(1:size(possible_scoutings)[1])
             scouting_array = possible_scoutings[idx]
         else # only one array has a maximum => chose this one 
-        
             scouting_array = argmax(trials)
         end
+
         pop = population[scouting_array]
         fit = fitness[scouting_array]
         obj = objective[scouting_array]
@@ -546,7 +548,7 @@ Input
 
 
 Output
-- 'optimal solution': gives a vector of the size D with the optimal solution  
+- 'optimal_solution': gives a vector of the size D with the optimal solution  
 - 'populations': all populations that were computed during the ABC algorithm
 - 'best fitness tracker': a vector with for each iteration the best fitness value so far encountered. 
 
@@ -573,6 +575,11 @@ function ArtificialBeeColonization(D::Number, bounds_lower::Vector, bounds_upper
     @assert D > 0 "D must be positive" 
     @assert bounds_lower <= bounds_upper "Lower bounds must be smaller than upper bounds"
     @assert length(bounds_lower) == length(bounds_upper) == D  "The length of the lower bounds must be equal to the length of the upper bounds and the number of decision variables"
+    
+    # SUGGESTION: if S needs to be positive so that you can obtain that Np is an integer, you can consider implementing Np as Np=Int8(floor(S/2)) to get the 
+    # smallest integer closer to the float number you would obtain when S is odd (but it could also be that you need to have Np as exactly half S, in that 
+    # case ignore this).
+
     @assert iseven(S) "The particle swarm size must be an even number"
     @assert S > 0 "Particle swarm size must be a positive number"
     @assert T > 0 "Number of cycles must be positive"
