@@ -2,13 +2,14 @@ using Documenter
 
 using STMOZOO
 using STMOZOO.Example
-using STMOZOO.BeesAlgorithm
+using STMOZOO.SingleCellNMF
 
 makedocs(sitename="STMO ZOO",
     format = Documenter.HTML(),
-    modules=[BeesAlgorithm], # add your module
+    modules=[Example, SingleCellNMF], # add your module
     pages=Any[
-        "BeesAlgorithm" => "man/beesalgorithm.md",  # add the page to your documentation
+        "Example"=> "man/example.md",  # add the page to your documentation
+	"SingleCellNMF"=>"man/single_cell_nmf.md"
     ])
 
 #=
